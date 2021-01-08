@@ -1,0 +1,28 @@
+{
+  "name": "datcord-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rndtrash/datcord-backend.git"
+  },
+  "keywords": [
+    "datcord"
+  ],
+  "author": "rndtrash",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/rndtrash/datcord-backend/issues"
+  },
+  "homepage": "https://github.com/rndtrash/datcord-backend#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongodb": "^3.6.3",
+    "response-time": "^2.3.2",
+    "restana": "^4.8.1"
+  }
+}
