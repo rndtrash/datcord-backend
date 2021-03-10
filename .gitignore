@@ -1,2 +1,6 @@
+# Private files
 /.env
+/config.json
+
+# NPM
 /node_modules
