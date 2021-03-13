@@ -1,6 +1,13 @@
-# Private files
-/.env
-/config.json
+# Crystal
+/docs/
+/lib/
+/bin/
+/.shards/
+*.dwarf
 
-# NPM
-/node_modules
+# Sentry (https://github.com/samueleaton/sentry)
+/dev/
+/sentry
+
+# Settings
+/.env

@@ -1,5 +1,7 @@
 {
 	"recommendations": [
-		"esbenp.prettier-vscode"
+		"esbenp.prettier-vscode",
+		"crystal-lang-tools.crystal-lang",
+		"veelenga.crystal-ameba"
 	]
 }

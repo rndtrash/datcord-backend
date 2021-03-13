@@ -1,0 +1,33 @@
+name: datcord
+version: 0.1.0
+
+authors:
+  - Ivan Kuzmenko <kuzmenko.ivan1234@gmail.com>
+
+dependencies:
+  dotenv:
+    github: gdotdesign/cr-dotenv
+
+  action-controller:
+    github: spider-gazelle/action-controller
+    version: "~> 3.0"
+
+  active-model:
+    github: spider-gazelle/active-model
+
+  secrets-env:
+    github: place-labs/secrets-env
+
+  redis:
+    github: stefanwille/crystal-redis
+    version: ~> 2.6.0
+
+development_dependencies:
+  ameba:
+    github: veelenga/ameba
+
+targets:
+  datcord:
+    main: src/datcord.cr
+
+license: GPLv3

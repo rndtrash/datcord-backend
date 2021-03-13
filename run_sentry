@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+if [ ! -f ./sentry ]; then
+	echo WARNING: Sentry is not found. Installing...
+	curl -fsSLo- https://raw.githubusercontent.com/samueleaton/sentry/master/install.cr | crystal eval
+fi
+
+./sentry -b "shards build" -r "bin/datcord"

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+if [ ! -f ./bin/ameba ]; then
+	echo WARNING: Ameba is not found. Installing...
+	crystal build lib/ameba/bin/ameba.cr --release -o bin/ameba
+fi
+
+./bin/ameba
