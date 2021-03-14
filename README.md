@@ -8,7 +8,7 @@ TODO: Write a description here
 `shards install`
 
 2. Compile the executable of Datcord with this command:
-`shards build`
+`shards build --release`
 
 ## Usage
 

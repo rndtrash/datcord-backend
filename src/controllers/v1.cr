@@ -4,11 +4,11 @@ require "../authentication"
 class ApiV1 < Application
   base "/v1"
 
-  def index
-    respond_with do
-      text "gtfo"
-    end
-  end
+  # def index
+  #   respond_with do
+  #     text "gtfo"
+  #   end
+  # end
 
   get "/ping" do
     respond_with do
@@ -17,45 +17,49 @@ class ApiV1 < Application
   end
 
   get "/auth" do
-    if !request.query_params.has_key?("public_key")
-      respond_with do
-        json({status: "error"})
+    if request.query_params.has_key?("token")
+      token = request.query_params["token"]
+      case Datcord::Authentication.token_status(@redis, token)
+      when Datcord::AuthenticationStatus::PENDING
+        ttl = Datcord::Authentication.approve_token(@redis, token)
+        respond_with do
+          if ttl <= 0
+            json({status: "error"})
+          else
+            json({status: "ok", timeUntilUpdate: ttl})
+          end
+        end
+      when Datcord::AuthenticationStatus::AUTHORIZED
+        ttl = Datcord::Authentication.renew_token(@redis, token)
+        respond_with do
+          if ttl <= 0
+            json({status: "error"})
+          else
+            json({status: "ok", timeUntilUpdate: ttl})
+          end
+        end
       end
-    end
-    public_key = request.query_params["public_key"]
-    case Datcord::Authentication.token_status(@redis, public_key)
-    when Datcord::AuthenticationStatus::PENDING
-      if !request.query_params.has_key?("secret")
+    else
+      if request.query_params.has_key?("public_key")
+        token = Datcord::Authentication.new_token(@redis, request.query_params["public_key"])
+        respond_with do
+          if token.nil?
+            json({status: "error"})
+          else
+            json({status: "ok", token: token})
+          end
+        end
+      else
         respond_with do
           json({status: "error"})
         end
       end
-      ttl = Datcord::Authentication.approve_token(@redis, public_key, request.query_params["secret"])
-      respond_with do
-        if ttl <= 0
-          json({status: "error"})
-        else
-          json({status: "ok", timeUntilUpdate: ttl})
-        end
-      end
-    when Datcord::AuthenticationStatus::AUTHORIZED
-      ttl = Datcord::Authentication.renew_token(@redis, public_key)
-      respond_with do
-        if ttl <= 0
-          json({status: "error"})
-        else
-          json({status: "ok", timeUntilUpdate: ttl})
-        end
-      end
-    else
-      secret = Datcord::Authentication.new_token(@redis, public_key)
-      respond_with do
-        if secret.nil?
-          json({status: "error"})
-        else
-          json({status: "ok", secret: secret})
-        end
-      end
     end
+  end
+
+  get "/deauth" do
+    respond_with { json({status: "error"}) } unless request.query_params.has_key?("token") && Datcord::Authentication.delete_token(@redis, request.query_params["token"])
+
+    respond_with { json({status: "ok"}) }
   end
 end

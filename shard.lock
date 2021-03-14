@@ -36,6 +36,10 @@ shards:
     git: https://github.com/luckyframework/lucky_router.git
     version: 0.4.0
 
+  openssl_ext:
+    git: https://github.com/spider-gazelle/openssl_ext.git
+    version: 0.1.2
+
   pool:
     git: https://github.com/ysbaddaden/pool.git
     version: 0.2.3

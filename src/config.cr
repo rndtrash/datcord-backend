@@ -23,7 +23,7 @@ Log.builder.bind "action-controller.*", log_level, Datcord::LOG_BACKEND
 Log.builder.bind "#{Datcord::NAME}.*", log_level, Datcord::LOG_BACKEND
 
 # Filter out sensitive params that shouldn't be logged
-filter_params = ["token", "token_proof"]
+filter_params = ["token", "public_key"]
 keeps_headers = ["X-Request-ID"]
 
 # Add handlers that should run before your application

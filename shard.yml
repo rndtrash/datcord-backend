@@ -22,6 +22,9 @@ dependencies:
     github: stefanwille/crystal-redis
     version: ~> 2.6.0
 
+  openssl_ext:
+    github: spider-gazelle/openssl_ext
+
 development_dependencies:
   ameba:
     github: veelenga/ameba
