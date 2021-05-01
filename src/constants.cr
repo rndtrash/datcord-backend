@@ -17,12 +17,14 @@ module Datcord
   DEFAULT_HOST          = ENV["DC_SERVER_HOST"]? || "127.0.0.1"
   DEFAULT_PROCESS_COUNT = (ENV["DC_PROCESS_COUNT"]? || 1).to_i
 
+  RATE_LIMIT_PER_30S = 100
+
   RSA_MINIMAL_PKEY_SIZE = 1024 / 8
   RSA_MAXIMAL_PKEY_SIZE = 2048 / 8
   TOKEN_RENEWAL_PERIOD  = ENV["DC_TOKEN_RENEWAL_PERIOD"]
   TOKEN_LENGTH          = 24
 
-  REDIS_URI             = ENV["DC_REDIS_URI"]
+  REDIS_URI = ENV["DC_REDIS_URI"]
 
   def self.running_in_production?
     ENVIRONMENT == "production"

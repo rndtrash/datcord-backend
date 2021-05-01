@@ -19,6 +19,11 @@ class ApiV1 < Application
   get "/auth" do
     if request.query_params.has_key?("token")
       token = request.query_params["token"]
+      if token.size == 0
+        respond_with do
+          json({status: "error"})
+        end
+      end
       case Datcord::Authentication.token_status(@redis, token)
       when Datcord::AuthenticationStatus::PENDING
         ttl = Datcord::Authentication.approve_token(@redis, token)

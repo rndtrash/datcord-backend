@@ -31,7 +31,7 @@ module Datcord::Authentication
   end
 
   def new_token(redis : Redis::PooledClient, public_key : String) : (String | Nil)
-    return nil unless (Datcord::RSA_MINIMAL_PKEY_SIZE..Datcord::RSA_MAXIMAL_PKEY_SIZE).includes?(public_key.size)
+    return nil unless Datcord::RSA_MINIMAL_PKEY_SIZE <= public_key.size && Datcord::RSA_MAXIMAL_PKEY_SIZE >= public_key.size # (Datcord::RSA_MINIMAL_PKEY_SIZE..Datcord::RSA_MAXIMAL_PKEY_SIZE).includes?(public_key.size)
 
     token = Datcord::Utils.random_string
     token_db_key = "t.#{token}"
@@ -43,7 +43,7 @@ module Datcord::Authentication
     # TODO: encrypt token with public key
     pkey = nil
     begin
-      pkey = OpenSSL::RSA.new("-----BEGIN PUBLIC KEY-----\n#{public_key}\n-----END PUBLIC KEY-----", nil, false)
+      pkey = OpenSSL::PKey::RSA.new("-----BEGIN PUBLIC KEY-----\n#{public_key}\n-----END PUBLIC KEY-----", nil, false)
     rescue exception
       return nil
     end

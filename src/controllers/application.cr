@@ -10,8 +10,20 @@ abstract class Application < ActionController::Base
 
   @redis = Redis::PooledClient.new(url: Datcord::REDIS_URI)
 
+  before_action :rate_limit
   before_action :set_request_id
   before_action :set_date_header
+
+  def rate_limit
+    key = "ip.#{request.remote_address}"
+    incr = @redis.incr(key)
+    @redis.expire(key, 30)
+    return if incr <= Datcord::RATE_LIMIT_PER_30S
+    response.headers["Rate-Limited"] = "1"
+    respond_with do
+      text ""
+    end
+  end
 
   # This makes it simple to match client requests with server side logs.
   # When building microservices this ID should be propagated to upstream services.
