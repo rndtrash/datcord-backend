@@ -25,6 +25,7 @@ module Datcord
   TOKEN_LENGTH          = 24
 
   REDIS_URI = ENV["DC_REDIS_URI"]
+  MONGO_URI = ENV["DC_MONGO_URI"]
 
   def self.running_in_production?
     ENVIRONMENT == "production"
