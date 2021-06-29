@@ -31,7 +31,8 @@ module Datcord::Authentication
   end
 
   def new_token(redis : Redis::PooledClient, public_key : String) : (String | Nil)
-    return nil unless Datcord::RSA_MINIMAL_PKEY_SIZE <= public_key.size && Datcord::RSA_MAXIMAL_PKEY_SIZE >= public_key.size # (Datcord::RSA_MINIMAL_PKEY_SIZE..Datcord::RSA_MAXIMAL_PKEY_SIZE).includes?(public_key.size)
+    return nil unless Datcord::RSA_MINIMAL_PKEY_SIZE <= public_key.size && Datcord::RSA_MAXIMAL_PKEY_SIZE >= public_key.size
+    Log.info { "pk size is ok" }
 
     token = Datcord::Utils.random_string
     token_db_key = "t.#{token}"
@@ -43,8 +44,9 @@ module Datcord::Authentication
     # TODO: encrypt token with public key
     pkey = nil
     begin
-      pkey = OpenSSL::PKey::RSA.new("-----BEGIN PUBLIC KEY-----\n#{public_key}\n-----END PUBLIC KEY-----", nil, false)
+      pkey = OpenSSL::PKey::RSA.new("-----BEGIN PUBLIC KEY-----\n#{public_key}\n-----END PUBLIC KEY-----")
     rescue exception
+      Log.error { exception }
       return nil
     end
     Base64.strict_encode pkey.public_encrypt token
@@ -80,5 +82,10 @@ module Datcord::Authentication
 
     redis.del(token)
     true
+  end
+
+  def token_ttl(redis : Redis::PooledClient, token : String) : Int64
+    token_db_key = "t.#{public_key}"
+    redis.ttl(token_db_key)
   end
 end

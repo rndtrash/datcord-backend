@@ -50,14 +50,19 @@ abstract class Application < ActionController::Base
   end
 
   def is_authenticated
-	request.headers["AuthenticationStatus"] = Datcord::AuthenticationStatus::NONE.to_i.to_s # well shit
-	return unless request.query_params.has_key?("token")
-	token = request.query_params["token"]
-	return if token.size == 0
-	ts = Datcord::Authentication.token_status(@@redis, token)
-	return if ts == Datcord::AuthenticationStatus::NONE
-	request.headers["AuthenticationStatus"] = ts.to_i.to_s
-	return if ts != Datcord::AuthenticationStatus::AUTHORIZED
-	response.headers["TimeUntilTokenExpire"] = Datcord::Authentication.renew_token(@@redis, token).to_s
+    request.headers["AuthenticationStatus"] = Datcord::AuthenticationStatus::NONE.to_i.to_s
+    return unless request.query_params.has_key?("token")
+    Log.info { "has token" }
+
+    token = request.query_params["token"]
+    return if token.size == 0
+
+    ts = Datcord::Authentication.token_status(@@redis, token)
+    return if ts == Datcord::AuthenticationStatus::NONE
+
+    request.headers["AuthenticationStatus"] = ts.to_i.to_s
+    return if ts != Datcord::AuthenticationStatus::AUTHORIZED
+
+    response.headers["TimeUntilTokenExpire"] = Datcord::Authentication.renew_token(@@redis, token).to_s
   end
 end

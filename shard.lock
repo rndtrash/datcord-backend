@@ -6,7 +6,7 @@ shards:
 
   active-model:
     git: https://github.com/spider-gazelle/active-model.git
-    version: 3.0.0
+    version: 3.1.1
 
   ameba:
     git: https://github.com/veelenga/ameba.git
@@ -41,8 +41,8 @@ shards:
     version: 0.4.7
 
   http-params-serializable:
-    git: https://github.com/caspiano/http-params-serializable.git
-    version: 0.4.1+git.commit.c87119117af3d2db11af22ad799ccf77072e6a8b
+    git: https://github.com/place-labs/http-params-serializable.git
+    version: 0.5.0
 
   ipaddress:
     git: https://github.com/64726f70/ipaddress.cr.git
@@ -58,7 +58,7 @@ shards:
 
   openssl_ext:
     git: https://github.com/spider-gazelle/openssl_ext.git
-    version: 2.1.4
+    version: 2.1.5
 
   pool:
     git: https://github.com/ysbaddaden/pool.git
