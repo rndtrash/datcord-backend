@@ -56,6 +56,10 @@ shards:
     git: https://github.com/luckyframework/lucky_router.git
     version: 0.4.2
 
+  moongoon:
+    git: https://github.com/elbywan/moongoon.git
+    version: 0.7.4
+
   openssl_ext:
     git: https://github.com/spider-gazelle/openssl_ext.git
     version: 2.1.5

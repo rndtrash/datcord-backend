@@ -1,6 +1,6 @@
 require "uuid"
 require "redis"
-require "cryomongo"
+require "moongoon"
 require "../constants"
 require "../authentication"
 
@@ -10,8 +10,11 @@ abstract class Application < ActionController::Base
   Log = ::Datcord::Log.for("controller")
 
   @@redis = Redis::PooledClient.new(url: Datcord::REDIS_URI)
-  @@mongo = Mongo::Client.new(Datcord::MONGO_URI)
-  @@mongodb : Mongo::Database = @@mongo.default_database.not_nil!
+
+  Moongoon.after_connect {
+    Log.info { "Successfully connected to MongoDB!" }
+  }
+  Moongoon.connect(database_url: Datcord::MONGO_URI)
 
   before_action :rate_limit
   before_action :set_request_id

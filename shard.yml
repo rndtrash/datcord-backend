@@ -25,8 +25,8 @@ dependencies:
   openssl_ext:
     github: spider-gazelle/openssl_ext
 
-  cryomongo:
-    github: elbywan/cryomongo
+  moongoon:
+    github: elbywan/moongoon
 
 development_dependencies:
   ameba:
