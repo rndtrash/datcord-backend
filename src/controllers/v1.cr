@@ -1,4 +1,5 @@
 require "redis"
+require "bson"
 require "../authentication"
 
 class ApiV1 < Application
@@ -23,7 +24,7 @@ class ApiV1 < Application
       when Datcord::AuthenticationStatus::PENDING
         Log.info { "pending" }
         ttl = Datcord::Authentication.approve_token(@@redis, token)
-        if ttl <= 0
+        if ttl < 1
           respond_with { json({status: "error"}) }
         end
 
@@ -77,20 +78,38 @@ class ApiV1 < Application
   post "/user" do
     return if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
 
-    # TODO: make a user profile
+    token = request.query_params["token"]
+    uid = Datcord::Authentication.token_get_user(@@redis, token)
+    Log.info { "looking for user..." }
+    u = User.find_one({id: uid})
+    if u.nil?
+      respond_with {json({status: "error", how: "how"})}
+    end
+    # TODO: modify the profile or something
   end
 
   get "/user" do
-    return if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
+    respond_with {json({status: "error"})} if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
 
     if request.query_params.has_key?("public_key")
-      #
+      respond_with {json({status: "not implemented"})}
     end
 
     if request.query_params.has_key?("id")
-      #
+      respond_with {json({status: "not implemented"})}
     end
 
-    # TODO: return user's profile by his token
+    token = request.query_params["token"]
+    uid = Datcord::Authentication.token_get_user(@@redis, token)
+    respond_with {json({status: "error"})} if uid.nil?
+
+    Log.info { "looking for user... #{BSON::ObjectId.new(uid)}" }
+    u = User.find_one({_id: BSON::ObjectId.new(uid)})
+    if u.nil?
+      respond_with {json({status: "error", how: "how"})}
+    else
+      # TODO: do not show everything in the document
+      respond_with {json(u)}
+    end
   end
 end
