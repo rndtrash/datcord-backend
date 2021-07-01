@@ -10,4 +10,5 @@ class Message < Moongoon::Collection
     property time : Int64
     property last_edit_time : Int64?
     # embed
+    # reactions
 end

@@ -76,40 +76,69 @@ class ApiV1 < Application
   end
 
   post "/user" do
-    return if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
+    respond_with { json({status: "error"}) } if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
 
-    token = request.query_params["token"]
-    uid = Datcord::Authentication.token_get_user(@@redis, token)
-    Log.info { "looking for user..." }
-    u = User.find_one({id: uid})
-    if u.nil?
-      respond_with {json({status: "error", how: "how"})}
+    u = User.find_by_token(@@redis, request.query_params["token"])
+    respond_with { json({status: "error"}) } if u.nil?
+
+    is_dirty = false
+
+    if request.query_params.has_key?("name")
+      u.name = request.query_params["name"]
+      is_dirty = true
     end
-    # TODO: modify the profile or something
+
+    if request.query_params.has_key?("profile_picture")
+      # TODO: profile picture upload
+      is_dirty = true
+    end
+
+    if request.query_params.has_key?("status")
+      s = request.query_params["status"]
+      if s.size == 0
+        u.status = nil
+      else
+        u.status = s
+      end
+      is_dirty = true
+    end
+
+    if is_dirty
+      u.update
+      respond_with { json(u.to_tuple(true)) }
+    else
+      respond_with { json({status: "error"}) }
+    end
   end
 
   get "/user" do
-    respond_with {json({status: "error"})} if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
+    respond_with { json({status: "error"}) } if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
 
+    u : User?
+    is_owner = false
     if request.query_params.has_key?("public_key")
-      respond_with {json({status: "not implemented"})}
+      u = User.find_by_public_key(@@redis, request.query_params["public_key"])
+    elsif request.query_params.has_key?("id")
+      u = User.find_by_id(@@redis, request.query_params["id"])
+    else
+      u = User.find_by_token(@@redis, request.query_params["token"])
+      is_owner = true
     end
 
-    if request.query_params.has_key?("id")
-      respond_with {json({status: "not implemented"})}
-    end
+    respond_with { json({status: "error"}) } if u.nil?
+
+    respond_with { json(u.to_tuple(is_owner)) }
+  end
+
+  delete "/user" do
+    respond_with { json({status: "error"}) } if request.headers["AuthenticationStatus"] != Datcord::AuthenticationStatus::AUTHORIZED.to_i.to_s
 
     token = request.query_params["token"]
-    uid = Datcord::Authentication.token_get_user(@@redis, token)
-    respond_with {json({status: "error"})} if uid.nil?
+    u = User.find_by_token(@@redis, token)
+    respond_with { json({status: "error"}) } if u.nil?
 
-    Log.info { "looking for user... #{BSON::ObjectId.new(uid)}" }
-    u = User.find_one({_id: BSON::ObjectId.new(uid)})
-    if u.nil?
-      respond_with {json({status: "error", how: "how"})}
-    else
-      # TODO: do not show everything in the document
-      respond_with {json(u)}
-    end
+    Datcord::Authentication.delete_token(@@redis, token)
+    u.remove
+    respond_with { json({status: "ok"}) }
   end
 end
