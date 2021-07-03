@@ -3,7 +3,7 @@
 ## Notes
 
 - When authorized, every request you make bumps your TimeUntilTokenExpire
-- \*Every endpoint that requires authorization has public_key argument ([More](#auth))
+- \*Every endpoint that requires authorization has public_key argument ([More](#get-auth))
 
 ## /v1
 
